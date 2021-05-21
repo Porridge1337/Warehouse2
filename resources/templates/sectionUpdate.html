@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org"
+				xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+<title>Update section</title>
+</head>
+<body>
+	<form th:method="PATCH" th:action="@{/section/update/{id}(id=${update.getId()})}" th:object="${update}">
+		<input type="text" th:field="*{section}" id="section">	    				    		
+		<input type="hidden" th:field="*{quantity}" id="quantity"> 	
+		<input  type="text" th:field="*{description}" id="description">  
+		<input type="submit" value="update"> 
+	</form>
+</body>
+</html>

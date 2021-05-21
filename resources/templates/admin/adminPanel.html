@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org"
+				xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+<title>Admin panel</title>
+</head>
+<body>
+	<table>
+		<thead>
+			<tr>
+				<th>№</th>
+				<th>Username</th>
+				<th>Roles</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each = "user, sec:${users}">
+				<td th:text="${sec.count}">Count</td>
+				<td th:text="${user.getUsername()}">Username</td>
+				<td th:text="${user.getRole()}">Roles </td>
+				<td>
+					<form th:method="DELETE" th:action="@{/adminPage/delete/{id}(id=${user.getUser_id()})}">
+						<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?')">
+					</form>
+					<form th:method="GET" th:action="@{/adminPage/update/{id}(id=${user.getUser_id()})}">
+						<input  type="submit" value="get" >
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

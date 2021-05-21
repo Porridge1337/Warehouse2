@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org"
+				xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+<title>Product</title>
+</head>
+<body>
+<form th:method="POST" th:action="@{/section/products/add}" th:object="${product}" sec:authorize="hasAnyAuthority('ADMIN','CREATOR')">
+	<!-- <input type="hidden" th:field="*{id}"> -->
+	<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите имя продукта">
+	<select th:field="*{section}">
+		<th:block th:each="sec: ${sect}">
+			<option th:text="${sec.getSection()}" th:value="${sec.getSection()}">
+		</th:block>
+	</select>
+	<input type="text" th:field="*{description}" id="description" placeholder="описание">
+	<input type="text" th:field="*{quantity}" id="quantity" placeholder="колличество">
+	<input type="text" th:field="*{price}" id="price" placeholder="цена">
+	<input type="submit" value="add">
+</form>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Products</th>
+			</tr>
+			<tr>	
+				<th>№</th>
+				<th>Product name</th>
+				<th>Section</th>
+				<th>Description</th>
+				<th>Quantity</th>
+				<th>Price</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="prod, sec : ${products}">
+				<td>
+					<span th:text="${sec.count}">Number</span>
+				</td>
+				<td>
+					<span th:text="${prod.getName_product()}"></span>
+				</td>
+				<td>
+					<span th:text="${prod.getSection()}">Number</span>
+				</td>
+				<td>
+					<span th:text="${prod.getDescription()}"></span>
+				</td>
+				<td>
+					<span th:text="${prod.getQuantity()}"></span>
+				</td>
+				<td>
+					<span th:text="${prod.getPrice()}"></span>
+				</td>
+				<td>				
+					<form th:method="DELETE" th:action="@{/section/products/delete/{id}(id=${prod.getId()})}" sec:authorize="hasAnyAuthority('ADMIN')">
+						<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?')">
+					</form>
+					<form th:method="GET" th:action="@{/section/products/update/{id}(id=${prod.getId()})}" sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')">
+						<input type="submit" value="Get">
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

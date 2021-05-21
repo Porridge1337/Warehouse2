@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org"
+				xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+<title>User update</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/adminPage/update}" th:object="${user}"><!-- th:action="@{/adminPage/update/{id}(id=${user.getUser_id()})}" -->
+		<input type="hidden" th:field="*{user_id}" id="user_id"/>
+		<input type="text" th:field="*{username}" id="section">	    				    		
+		<input type="text" th:field="*{actives}" id="actives">		
+		<input type="text" th:field="*{password}" id="password">		<!-- <input type="text" th:field="*{password}" id="quantity">	 -->
+		<th:block th:each="role : ${roles}">
+			<input type="checkbox" th:field="*{role}" th:value="${role.getRole_id()}" th:text="${role.getRole()}"/>			
+		</th:block>
+		<input type="submit" value="update"> 
+	</form>
+</body>
+</html>
