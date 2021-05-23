@@ -7,7 +7,7 @@ import ru.example.demo.model.SectionModel;
 
 public interface ProductService {
 
-	ProductModel addProduct(ProductModel productModel);
+	ProductModel addProduct(ProductModel productModel, String fileName);
 	
 	List<SectionModel> findAllSections();
 	List<ProductModel> findAllProducts();	

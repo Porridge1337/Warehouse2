@@ -23,8 +23,9 @@ public class ProductServiceImpl implements ProductService{
 	}
 	
 	@Override
-	public ProductModel addProduct(ProductModel productModel) {
+	public ProductModel addProduct(ProductModel productModel, String fileName) {
 					
+		productModel.setLogo(fileName);	
 		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));
 		
 		return prodRepo.save(productModel);

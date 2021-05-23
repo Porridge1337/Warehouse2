@@ -2,11 +2,15 @@
 <html lang="en" xmlns:th="http://thymeleaf.org"
 				xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-<meta charset="UTF-8">
-<title>Product</title>
+	<meta charset="UTF-8">
+	<title>Product</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<form th:method="POST" th:action="@{/section/products/add}" th:object="${product}" sec:authorize="hasAnyAuthority('ADMIN','CREATOR')">
+<form th:method="POST" th:action="@{/section/products/add}" th:object="${product}" 
+	enctype="multipart/form-data"
+	sec:authorize="hasAnyAuthority('ADMIN','CREATOR')"
+	>
 	<!-- <input type="hidden" th:field="*{id}"> -->
 	<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите имя продукта">
 	<select th:field="*{section}">
@@ -17,9 +21,10 @@
 	<input type="text" th:field="*{description}" id="description" placeholder="описание">
 	<input type="text" th:field="*{quantity}" id="quantity" placeholder="колличество">
 	<input type="text" th:field="*{price}" id="price" placeholder="цена">
+	<label>Logo:<input type="file" name = "fileImage" id="fileImage" accept="image/png, image/jpeg"/></label>
+	<img id="thumbnail" alt="Logo Preview" width="250" height="80">
 	<input type="submit" value="add">
 </form>
-
 	<table>
 		<thead>
 			<tr>
@@ -28,6 +33,7 @@
 			<tr>	
 				<th>№</th>
 				<th>Product name</th>
+				<th>Logo</th>
 				<th>Section</th>
 				<th>Description</th>
 				<th>Quantity</th>
@@ -42,6 +48,9 @@
 				</td>
 				<td>
 					<span th:text="${prod.getName_product()}"></span>
+				</td>
+				<td>
+					<img th:src="@{${prod.logoImagePath}}">
 				</td>
 				<td>
 					<span th:text="${prod.getSection()}">Number</span>
@@ -66,5 +75,25 @@
 			</tr>
 		</tbody>
 	</table>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#fileImage').change(function(){
+			showImageThumbnail(this);
+		});		
+	});
+	
+	function showImageThumbnail(fileInput){
+		file = fileInput.files[0];
+		reader = new FileReader();
+		
+		reader.onload = function(e){
+			$('#thumbnail').attr('src', e.target.result);
+		};
+		reader.readAsDataURL(file);
+	}
+
+</script>
+	
+	
 </body>
 </html>

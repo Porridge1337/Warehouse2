@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "product",schema = "shop")
@@ -16,8 +17,7 @@ public class ProductModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	
+	private long id;	
 	@Column(name = "name_product")
 	private String name_product;
 	@Column(name = "section")
@@ -28,6 +28,8 @@ public class ProductModel {
 	private long quantity;
 	@Column(name = "price")
 	private long price;
+	@Column(name = "logo")
+	private String logo;
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "section_id",nullable = false)
 	private SectionModel sectionModel;
@@ -93,6 +95,14 @@ public class ProductModel {
 	public void setPrice(long price) {
 		this.price = price;
 	}
+	
+	public String getLogo() {
+		return logo;
+	}
+
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
 
 	public SectionModel getSectionModel() {
 		return sectionModel;
@@ -100,6 +110,14 @@ public class ProductModel {
 
 	public void setSectionModel(SectionModel sectionModel) {
 		this.sectionModel = sectionModel;
+	}
+	
+	
+	@Transient
+	public String getLogoImagePath() {
+		if(logo==null || section == null || name_product == null) return null;
+		
+		return "/products-logos/"+section+"/"+name_product+"/"+logo;
 	}
 
 	@Override

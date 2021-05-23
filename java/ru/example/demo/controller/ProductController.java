@@ -1,8 +1,16 @@
 package ru.example.demo.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -10,6 +18,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import ru.example.demo.model.ProductModel;
 import ru.example.demo.model.SectionModel;
@@ -27,7 +37,7 @@ public class ProductController {
 	
 	@GetMapping("/products")
 	public String getProductsPage(@ModelAttribute(name = "product") ProductModel productModel ,Model model) {
-		
+			
 		model.addAttribute("product",productModel);		
 		model.addAttribute("products",productService.findAllProducts());				
 		model.addAttribute("sect",productService.findAllSections());
@@ -36,11 +46,13 @@ public class ProductController {
 	}
 	
 	@PostMapping("/products/add")
-	public String addProduct(@ModelAttribute("product")ProductModel productModel) { 
-		
-		productService.addProduct(productModel);
+	public String addProduct(@ModelAttribute("product")ProductModel productModel,
+			@RequestParam("fileImage")MultipartFile multipartFile) throws IOException { 
+					
+		productService.addProduct(productModel,StringUtils.cleanPath(multipartFile.getOriginalFilename()));
 		calculateQuantities(sectionService.findBySection(productModel.getSection()).getId());
-		
+		uploadPic(productModel.getSection(),productModel.getName_product(),StringUtils.cleanPath(multipartFile.getOriginalFilename()) ,multipartFile );
+												
 		return "redirect:/section/products";
 	}
 	
@@ -65,7 +77,7 @@ public class ProductController {
 		return"redirect:/section/products";
 	}
 	
-	@GetMapping("/products/update/{id}") // добавить пост
+	@GetMapping("/products/update/{id}") 
 	public String getProductUpdatePage(@PathVariable("id") long id,Model model) {
 		
 		if(productService.isExist(id)) {					
@@ -86,11 +98,27 @@ public class ProductController {
 	
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////
-	private void calculateQuantities(long section_id) {
-		int ammountProductsModel =	productService.findProductBySectionId(section_id).size();		
+	private void calculateQuantities(long section_id) { //высчитывает колличество продуктов в таблицу секции
+		int ammountProductsModel = productService.findProductBySectionId(section_id).size();		
 		SectionModel sectionModel = sectionService.findBySectionId(section_id);
 		sectionModel.setQuantity(ammountProductsModel);
 		sectionService.updateProduct(sectionModel);				
 	}
+	private void uploadPic (String section, String nameProduct,String fileName,MultipartFile multipartFile ) throws IOException {//указывает расположение сохранения картинок
+																									//и в случае чего создаёт нужные папки																						
+		if(multipartFile.isEmpty()) {
+			return;
+		}
+		String uploadDir = "./products-logos/"+section+"/"+nameProduct;										
+		Path uploadPath = Paths.get(uploadDir);
+		if(!Files.exists(uploadPath)) {
+			Files.createDirectories(uploadPath);
+		}
+		InputStream inputStream = multipartFile.getInputStream();
+		Path filePath= uploadPath.resolve(fileName);
+		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+	}
+	
+	
 ////////////////////////////////////////////////////////////////////////////////////////////////	
 }

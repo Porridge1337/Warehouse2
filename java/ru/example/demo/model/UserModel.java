@@ -40,7 +40,7 @@ public class UserModel {
 			joinColumns = @JoinColumn(name="user_id"),
 			inverseJoinColumns = @JoinColumn(name="role_id")			
 			)
-	private Set<Roles>role = new HashSet<>();//private Set<Roles>role = new HashSet<>();
+	private Set<Roles>role = new HashSet<>();
 		
 	
 	public long getUser_id() {
