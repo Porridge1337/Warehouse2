@@ -22,7 +22,7 @@
 	<input type="text" th:field="*{quantity}" id="quantity" placeholder="колличество">
 	<input type="text" th:field="*{price}" id="price" placeholder="цена">
 	<label>Logo:<input type="file" name = "fileImage" id="fileImage" accept="image/png, image/jpeg"/></label>
-	<img id="thumbnail" alt="Logo Preview" width="250" height="80">
+	<img id="thumbnail" alt="Logo Preview" width="150" height="110">
 	<input type="submit" value="add">
 </form>
 	<table>
@@ -50,7 +50,7 @@
 					<span th:text="${prod.getName_product()}"></span>
 				</td>
 				<td>
-					<img th:src="@{${prod.logoImagePath}}" width="250" height="80">
+					<img th:src="@{${prod.logoImagePath}}" width="150" height="110">
 				</td>
 				<td>
 					<span th:text="${prod.getSection()}">Number</span>

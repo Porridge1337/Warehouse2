@@ -1,8 +1,10 @@
 package ru.example.demo.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -91,8 +93,8 @@ public class ProductController {
 	@PatchMapping("/products/update/{id}")
 	public String updateProduct(@ModelAttribute(name = "update")ProductModel productModel,
 			@RequestParam("fileImage")MultipartFile multipartFile) throws IOException {
-		
-		productService.updateProduct(productModel,StringUtils.cleanPath(multipartFile.getOriginalFilename()) );
+				
+		productService.updateProduct(productModel,multipartFile );
 		uploadPic(productModel.getSection(),productModel.getName_product(),StringUtils.cleanPath(multipartFile.getOriginalFilename()) ,multipartFile );
 		
 		return "redirect:/section/products/"+sectionService.findBySection(productModel.getSection()).getId();
@@ -107,7 +109,7 @@ public class ProductController {
 		sectionService.updateProduct(sectionModel);				
 	}
 	private void uploadPic (String section, String nameProduct,String fileName,MultipartFile multipartFile ) throws IOException {//указывает расположение сохранения картинок
-																									//и в случае чего создаёт нужные папки																						
+																					//и в случае чего создаёт нужные папки																						
 		if(multipartFile.isEmpty()) {
 			return;
 		}
@@ -119,6 +121,8 @@ public class ProductController {
 		InputStream inputStream = multipartFile.getInputStream();
 		Path filePath= uploadPath.resolve(fileName);
 		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+		
+		System.out.println(Files.exists(filePath,LinkOption.NOFOLLOW_LINKS));//проверка, удалить потом
 	}
 	
 	

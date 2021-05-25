@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import ru.example.demo.model.ProductModel;
 import ru.example.demo.model.SectionModel;
@@ -60,9 +62,11 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public void updateProduct(ProductModel productModel,  String fileName) {
+	public void updateProduct(ProductModel productModel, MultipartFile multipartFile) {
 		
-		productModel.setLogo(fileName);	
+		if(!multipartFile.isEmpty()) {	
+			productModel.setLogo(StringUtils.cleanPath(multipartFile.getOriginalFilename()));
+		}
 		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));
 		
 		prodRepo.save(productModel);
