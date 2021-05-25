@@ -15,7 +15,7 @@ public interface ProductService {
 	ProductModel findProductById(long id);
 	
 	void deleteProduct(long id);
-	void updateProduct(ProductModel productModel);
+	void updateProduct(ProductModel productModel,  String fileName);
 	
 	boolean isExist(long id);
 }

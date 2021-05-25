@@ -89,11 +89,13 @@ public class ProductController {
 	}
 	
 	@PatchMapping("/products/update/{id}")
-	public String updateProduct(@ModelAttribute(name = "update")ProductModel productModel) {
+	public String updateProduct(@ModelAttribute(name = "update")ProductModel productModel,
+			@RequestParam("fileImage")MultipartFile multipartFile) throws IOException {
 		
-		productService.updateProduct(productModel);
+		productService.updateProduct(productModel,StringUtils.cleanPath(multipartFile.getOriginalFilename()) );
+		uploadPic(productModel.getSection(),productModel.getName_product(),StringUtils.cleanPath(multipartFile.getOriginalFilename()) ,multipartFile );
 		
-		return "redirect:/section/products/"+productModel.getId();
+		return "redirect:/section/products/"+sectionService.findBySection(productModel.getSection()).getId();
 	}
 	
 	

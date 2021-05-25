@@ -50,7 +50,7 @@
 					<span th:text="${prod.getName_product()}"></span>
 				</td>
 				<td>
-					<img th:src="@{${prod.logoImagePath}}">
+					<img th:src="@{${prod.logoImagePath}}" width="250" height="80">
 				</td>
 				<td>
 					<span th:text="${prod.getSection()}">Number</span>
@@ -91,7 +91,6 @@
 		};
 		reader.readAsDataURL(file);
 	}
-
 </script>
 	
 	

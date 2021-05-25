@@ -60,9 +60,11 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public void updateProduct(ProductModel productModel) {
-	
+	public void updateProduct(ProductModel productModel,  String fileName) {
+		
+		productModel.setLogo(fileName);	
 		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));
+		
 		prodRepo.save(productModel);
 		
 	}

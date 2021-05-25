@@ -2,11 +2,13 @@
 <html lang="en" xmlns:th="http://thymeleaf.org"
 				xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-<meta charset="UTF-8">
-<title>Product update</title>
+	<meta charset="UTF-8">
+	<title>Product update</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-	<form th:method="PATCH" th:action="@{/section/products/update/{id}(id=${update.getId()})}" th:object="${update}">
+	<form th:method="PATCH" th:action="@{/section/products/update/{id}(id=${update.getId()})}" th:object="${update}"
+	enctype="multipart/form-data">
 		<input type="hidden" th:field=*{id} id="id">
 		<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите products name">
 		<select th:field="*{section}">
@@ -17,7 +19,27 @@
 		<input type="text" th:field="*{description}" id="description" placeholder="описание">
 		<input type="text" th:field="*{quantity}" id="quantity" placeholder="колличество">
 		<input type="text" th:field="*{price}" id="price" placeholder="цена">
+		<label>Logo:<input type="file" name = "fileImage" id="fileImage" accept="image/png, image/jpeg"/></label>
+		<img id="thumbnail" alt="Logo Preview" width="250" height="80">
 		<input type="submit" value="add">
 	</form>
+	
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$('#fileImage').change(function(){
+			showImageThumbnail(this);
+		});		
+	});
+	
+	function showImageThumbnail(fileInput){
+		file = fileInput.files[0];
+		reader = new FileReader();
+		
+		reader.onload = function(e){
+			$('#thumbnail').attr('src', e.target.result);
+		};
+		reader.readAsDataURL(file);
+	}
+</script>
 </body>
 </html>
