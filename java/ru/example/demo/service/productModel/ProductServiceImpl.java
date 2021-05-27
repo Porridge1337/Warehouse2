@@ -1,5 +1,11 @@
 package ru.example.demo.service.productModel;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +31,11 @@ public class ProductServiceImpl implements ProductService{
 	}
 	
 	@Override
-	public ProductModel addProduct(ProductModel productModel, String fileName) {
+	public ProductModel addProduct(ProductModel productModel,MultipartFile multipartFile) {
 					
-		productModel.setLogo(fileName);	
+		productModel.setLogo(StringUtils.cleanPath(multipartFile.getOriginalFilename()));	
 		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));
+		uploadPic(productModel.getSection(),productModel.getName_product(),multipartFile );
 		
 		return prodRepo.save(productModel);
 	}
@@ -62,20 +69,48 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public void updateProduct(ProductModel productModel, MultipartFile multipartFile) {
+	public void updateProduct(ProductModel productModel, MultipartFile multipartFile) {		
 		
 		if(!multipartFile.isEmpty()) {	
+			deleteOldPic(productModel.getSection(),productModel.getName_product(),productModel.getLogo(),multipartFile );
 			productModel.setLogo(StringUtils.cleanPath(multipartFile.getOriginalFilename()));
 		}
-		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));
-		
-		prodRepo.save(productModel);
-		
-	}
+		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));		
+		uploadPic(productModel.getSection(),productModel.getName_product(),multipartFile);	
+		prodRepo.save(productModel);				
+	}	
 	
 	@Override
 	public boolean isExist(long id) {
 		return prodRepo.existsById(id);
 	}
 	
+	private void uploadPic (String section, String nameProduct,MultipartFile multipartFile )  {
+		//указывает расположение сохранения изображений и в случае чего создаёт нужные папки	
+		try {
+		if(multipartFile.isEmpty()) {
+			return;
+		}
+		String uploadDir = "./products-logos/"+section+"/"+nameProduct;										
+		Path uploadPath = Paths.get(uploadDir);
+		if(!Files.exists(uploadPath)) {
+			Files.createDirectories(uploadPath);
+		}
+		InputStream inputStream = multipartFile.getInputStream();
+		Path filePath= uploadPath.resolve(StringUtils.cleanPath(multipartFile.getOriginalFilename()));						
+		Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	private void deleteOldPic(String section, String nameProduct, String oldLogo,MultipartFile multipartFile)  {
+		try {
+		Path path = Paths.get("./products-logos/"+section+"/"+nameProduct+"/"+oldLogo);	
+		Files.deleteIfExists(path);
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+		
 }
+	
