@@ -16,46 +16,76 @@
 	  	    <!-- <input type="text" th:field="*{quantity}" id="quantity"> -->	
 		    <input  type="text" th:field="*{description}" id="description" placeholder="укажите описание">  
 		    <input type="submit" value="add"> 
-	</form>    
-	<table>
-	    	<thead>
-	    		<tr>	
-	    			<th>Categories</th>
-	    		</tr>
-	    		<tr>
-	    			<th>Number</th>
-	    			<th>Name</th>
-	    			<th>Quantity</th>
-	    			<th>Description</th>
-	    			<th>action</th>
-	    		</tr>
-	    	</thead>
-	    	<tbody>
-	    		<tr th:each = "sec,state :${sections}">
-	    			<td>
-	    				<a th:href="@{/section/products/{id}(id=${sec.getId()})}">
-							<span th:text="${state.count}">№</span>
-						</a>
-					</td>
-	    			<td >
-	    				<span th:text="${sec.getSection()}">SectionName</span>
-	    			</td>
-	    			<td>
-	    				<span th:text="${sec.getQuantity()}">SectionName</span>   				
-	    			</td>
-	    			<td>
-	    				<span th:text="${sec.getDescription()}">SectionName</span>
-	    			</td>
-	    			<td>
-	    				<form th:method="GET" th:action="@{/section/update/{id}(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')">
-	    					<input  type="submit" value="Get" >
-	    				</form> 
-	    				<form th:method="DELETE" th:action="@{/section/delete/{id}(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('ADMIN')">
-	    					<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?')">
-	    				</form> 
-	    			</td>
-	    		</tr>
-	    	</tbody>   	
-	    </table><br/>         
+	</form> 
+	<div>  
+		<table>
+		    	<thead>
+		    		<tr>	
+		    			<th>Categories</th>
+		    		</tr>
+		    		<tr>
+		    			<th>
+		    				<a> Number </a>
+		    			</th>
+		    			<th>
+		    				<a th:href="@{'/section/' + ${currentPage} + '?sortField=section&sortDirection=' + ${reverseSortDirection} }">Section</a>
+		    			</th>
+		    			<th>
+		    				<a th:href="@{'/section/' + ${currentPage} + '?sortField=quantity&sortDirection=' + ${reverseSortDirection} }">Quantity</a>
+		    			</th>
+		    			<th>Description</th>
+		    			<th>action</th>
+		    		</tr>
+		    	</thead>
+		    	<tbody>
+		    		<tr th:each = "sec,state :${sections}">
+		    			<td>
+		    				<a th:href="@{/section/products/{id}(id=${sec.getId()})}">
+								<span th:text="${state.count}">№</span>
+							</a>
+						</td>
+		    			<td >
+		    				<span th:text="${sec.getSection()}">SectionName</span>
+		    			</td>
+		    			<td>
+		    				<span th:text="${sec.getQuantity()}">SectionName</span>   				
+		    			</td>
+		    			<td>
+		    				<span th:text="${sec.getDescription()}">SectionName</span>
+		    			</td>
+		    			<td>
+		    				<form th:method="GET" th:action="@{/section/update/{id}(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')">
+		    					<input  type="submit" value="Get" >
+		    				</form> 
+		    				<form th:method="DELETE" th:action="@{/section/delete/{id}(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('ADMIN')">
+		    					<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?')">
+		    				</form> 
+		    			</td>
+		    		</tr>
+		    	</tbody>   	
+		    </table><br/>  
+		</div> 
+		<div>
+			Total sections: [[${totalItems}]] - Page [[${currentPage}]] of [[${totalPages}]]
+			&nbsp; -&nbsp; 
+			
+			<a th:if="${currentPage > 1}" th:href="@{'/section/1' + '?sortField=' + ${sortField} + '&sortDirection=' + ${sortDirection} }">First</a>
+			<span th:unless="${currentPage > 1}">First</span>
+			&nbsp;			
+			<a th:if="${currentPage > 1}" th:href="@{'/section/' + ${currentPage-1} + '?sortField=' + ${sortField} + '&sortDirection=' + ${sortDirection} }"> Previous </a>
+			<span th:unless="${currentPage > 1}"> Previous </span>
+			&nbsp;
+			
+			<span th:each="i: ${#numbers.sequence(1,totalPages)}">
+				<a th:if="${i!=currentPage}" th:href="@{'/section/' + ${i} + '?sortField=' +${sortField} + '&sortDirection=' + ${sortDirection}}" >[[${i}]]</a>
+				<span th:if="${i==currentPage}" >[[${i}]]</span>&nbsp;
+			</span>
+			
+			<a th:if="${currentPage < totalPages}" th:href="@{'/section/' + ${currentPage+1} + '?sortField=' + ${sortField} + '&sortDirection=' + ${sortDirection}}"> Next </a>
+			<span th:unless="${currentPage < totalPages}" > Next </span>
+			&nbsp;
+			<a th:if="${currentPage < totalPages}" th:href="@{'/section/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDirection=' + ${sortDirection}}"> Last </a>
+			<span th:unless="${currentPage < totalPages}"> Last </span>
+		</div> 
 </body>
 </html>

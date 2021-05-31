@@ -1,18 +1,9 @@
 package ru.example.demo.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.example.demo.model.ProductModel;
 import ru.example.demo.model.SectionModel;
 import ru.example.demo.service.productModel.ProductService;
-import ru.example.demo.service.sectionModel.SectionService;
+import ru.example.demo.service.sectionModel.SectionServiceImpl;
 
 @Controller
 @RequestMapping("/section")
@@ -35,7 +26,7 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 	@Autowired
-	private SectionService sectionService;
+	private SectionServiceImpl sectionService;
 	
 	@GetMapping("/products")
 	public String getProductsPage(@ModelAttribute(name = "product") ProductModel productModel ,Model model) {
