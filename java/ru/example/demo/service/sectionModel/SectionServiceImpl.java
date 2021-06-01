@@ -29,15 +29,13 @@ public class SectionServiceImpl {
 
 	
 	public Page<SectionModel> findAllSectionPages(int pageNumber,String sortField, String sortDirection) {
-		//Sort sort = Sort.by("section").ascending();
+		
 		Sort sort;
 		if(sortDirection.equals("unsorted")) {
 			sort = Sort.unsorted();
 		}else {
 			sort = sortDirection.equals("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
-		}
-		
-		
+		}				
 		Pageable pageable = PageRequest.of(pageNumber - 1, 5,sort);
 		
 		return sectionRepo.findAll(pageable);

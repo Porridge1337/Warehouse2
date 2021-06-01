@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import ru.example.demo.model.UserModel;
-import ru.example.demo.userDetailsImplementation.UserService;
+import ru.example.demo.userDetailsImplementation.UserServiceImpl;
 
 @Controller
 public class AdminPanelController {
 
 	@Autowired
-	private UserService userService;
+	private UserServiceImpl userService;
 	
 	@GetMapping("/adminPage")
 	public String getAdminPage(Model model) {

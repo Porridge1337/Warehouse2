@@ -1,10 +1,12 @@
 package ru.example.demo.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,16 +18,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.example.demo.model.SectionModel;
 import ru.example.demo.model.UserModel;
 import ru.example.demo.service.sectionModel.SectionServiceImpl;
-import ru.example.demo.userDetailsImplementation.UserService;
+import ru.example.demo.userDetailsImplementation.UserServiceImpl;
+import ru.example.demo.util.UserValidator;
 
 @Controller
 public class GreetingController {
 
 	@Autowired
-	private UserService userService;
+	private UserServiceImpl userService;
 	@Autowired
 	private SectionServiceImpl sectionService;
-	
+	@Autowired
+	private UserValidator userValidator;
 	
 	@GetMapping("/")
 	public String greeting(Model model) {
@@ -112,14 +116,14 @@ public class GreetingController {
 	}
 	
 	@PostMapping("/registration")
-	public String registration(@ModelAttribute("registration")UserModel user, Model model) {
-		UserModel userFromDb = sectionService.findByUsername(user.getUsername());
+	public String registration(@Valid @ModelAttribute("registration")UserModel user,BindingResult br,
+			Model model) {
+
+		userValidator.validate(user, br);		
+		if(br.hasErrors()) return "registration";
 		
-		if(userFromDb != null) {
-			return "redirect:/registration?error";
-		}
 		userService.saveWithDefaultRole(user);
-		
+	
 		return"redirect:/login";
 	}
 	

@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -23,8 +25,11 @@ public class UserModel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long user_id;
 	@Column(name = "username")
+	@Size(min = 3, max = 25, message = "Size must be between 3 and 25")
 	private String username;
 	@Column(name = "password")
+	@NotBlank(message = "password shouldnt be blank")
+	@Size(min = 8, max = 100, message = "mininum 8 symbols")
 	private String password;
 	@Column(name = "actives")
 	private boolean actives;
