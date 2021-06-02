@@ -40,7 +40,7 @@
 		    	<tbody>
 		    		<tr th:each = "sec,state :${sections}">
 		    			<td>
-		    				<a th:href="@{/section/products/{id}(id=${sec.getId()})}">
+		    				<a th:href="@{/section/{id_sec}/products(id_sec=${sec.getId()})}">
 								<span th:text="${state.count}">№</span>
 							</a>
 						</td>
@@ -54,10 +54,10 @@
 		    				<span th:text="${sec.getDescription()}">SectionName</span>
 		    			</td>
 		    			<td>
-		    				<form th:method="GET" th:action="@{/section/update/{id}(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')">
+		    				<form th:method="GET" th:action="@{/section/{id}/update(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')">
 		    					<input  type="submit" value="Get" >
 		    				</form> 
-		    				<form th:method="DELETE" th:action="@{/section/delete/{id}(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('ADMIN')">
+		    				<form th:method="DELETE" th:action="@{/section/{id}/delete(id=${sec.getId()})}" sec:authorize="hasAnyAuthority('ADMIN')">
 		    					<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?')">
 		    				</form> 
 		    			</td>

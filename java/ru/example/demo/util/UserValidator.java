@@ -22,7 +22,6 @@ public class UserValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {		
 		UserModel secModTarget = (UserModel) target;	
-		System.out.println(secModTarget);
 		if(sectionService.isExistByUsername(secModTarget.getUsername()) ) {
 			errors.rejectValue("username","User exists", "This user is already exists");
 		}		

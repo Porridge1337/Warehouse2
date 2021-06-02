@@ -7,7 +7,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-	<form th:method="PATCH" th:action="@{/section/products/update/{id}(id=${update.getId()})}" th:object="${update}"
+	<form th:method="PATCH" th:action="@{/section/{id_sec}/products/{id}/update(id=${update.getId()},id_sec=${update.sectionModel.getId()} )}" th:object="${update}"
 	enctype="multipart/form-data">
 		<input type="hidden" th:field=*{id} id="id">
 		<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите products name">

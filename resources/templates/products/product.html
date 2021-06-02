@@ -65,10 +65,10 @@
 					<span th:text="${prod.getPrice()}"></span>
 				</td>
 				<td>				
-					<form th:method="DELETE" th:action="@{/section/products/delete/{id}(id=${prod.getId()})}" sec:authorize="hasAnyAuthority('ADMIN')">
+					<form th:method="DELETE" th:action="@{/section/{id_sec}/products/{id}/delete(id=${prod.getId()},id_sec=${prod.sectionModel.getId()} )}" sec:authorize="hasAnyAuthority('ADMIN')">
 						<input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?')">
 					</form>
-					<form th:method="GET" th:action="@{/section/products/update/{id}(id=${prod.getId()})}" sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')">
+					<form th:method="GET" th:action="@{/section/{id_sec}/products/{id}/update(id=${prod.getId()}, id_sec=${prod.sectionModel.getId()} )}" sec:authorize="hasAnyAuthority('EDITOR', 'ADMIN')">
 						<input type="submit" value="Get">
 					</form>
 				</td>

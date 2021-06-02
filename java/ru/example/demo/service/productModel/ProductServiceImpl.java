@@ -19,7 +19,7 @@ import ru.example.demo.repository.ProductRepository;
 import ru.example.demo.repository.SectionRepository;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl {
 
 	@Autowired
 	private SectionRepository secRepo;	
@@ -30,7 +30,7 @@ public class ProductServiceImpl implements ProductService{
 		
 	}
 	
-	@Override
+	
 	public ProductModel addProduct(ProductModel productModel,MultipartFile multipartFile) {
 					
 		productModel.setLogo(StringUtils.cleanPath(multipartFile.getOriginalFilename()));	
@@ -40,35 +40,35 @@ public class ProductServiceImpl implements ProductService{
 		return prodRepo.save(productModel);
 	}
 
-	@Override
+	
 	public void deleteProduct(long id) {
 		prodRepo.deleteById(id);
 	}
 
-	@Override
+	
 	public List<ProductModel> findAllProducts() {		
 		return prodRepo.findAll();
 	}
 
-	@Override
+	
 	public List<SectionModel> findAllSections() {
 		
 		return secRepo.findAll();
 	}
 
-	@Override
-	public List<ProductModel> findProductBySectionId(long id) {
+	
+	public List<ProductModel> findProductBySectionId(long sec_id) {
 		
-		return prodRepo.findProductsModelBySectionId(id);
+		return prodRepo.findProductsModelBySectionId(sec_id);
 	}
 
-	@Override
+	
 	public ProductModel findProductById(long id) {		
 		
 		return prodRepo.findById(id).get();			
 	}
 
-	@Override
+	
 	public void updateProduct(ProductModel productModel, MultipartFile multipartFile) {		
 		
 		if(!multipartFile.isEmpty()) {	
@@ -80,7 +80,7 @@ public class ProductServiceImpl implements ProductService{
 		prodRepo.save(productModel);				
 	}	
 	
-	@Override
+	
 	public boolean isExist(long id) {
 		return prodRepo.existsById(id);
 	}

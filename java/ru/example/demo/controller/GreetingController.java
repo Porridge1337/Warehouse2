@@ -68,7 +68,7 @@ public class GreetingController {
 		return "section";
 	}
 	
-	@GetMapping("/section/update/{id}")
+	@GetMapping("/section/{id}/update")
 	public String getUpdateSectionPage(@PathVariable("id")long id,Model model) {
 		
 		if(sectionService.isExist(id)) {
@@ -79,7 +79,7 @@ public class GreetingController {
 		
 		
 	}
-	@PatchMapping("/section/update/{id}")
+	@PatchMapping("/section/{id}/update")
 	public String updateSection(@ModelAttribute(name = "update")SectionModel sectionModel) {
 		
 		sectionService.updateProduct(sectionModel);
@@ -95,7 +95,7 @@ public class GreetingController {
 		return "redirect:/section";
 	}
 	
-	@DeleteMapping("/section/delete/{id}")
+	@DeleteMapping("/section/{id}/delete")
 	public String deleteSection(@PathVariable("id")long id) {
 		
 		sectionService.deleteSection(id);
