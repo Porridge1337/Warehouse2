@@ -28,7 +28,7 @@ public class UserModel {
 	@Size(min = 3, max = 25, message = "Size must be between 3 and 25")
 	private String username;
 	@Column(name = "password")
-	@NotBlank(message = "password shouldnt be blank")
+	//@NotBlank(message = "password shouldnt be blank")
 	@Size(min = 8, max = 100, message = "mininum 8 symbols")
 	private String password;
 	@Column(name = "actives")

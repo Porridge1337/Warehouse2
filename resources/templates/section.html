@@ -13,7 +13,6 @@
 <body>
 	<form th:method="POST" th:action="@{/section/add}" th:object="${add}" sec:authorize="hasAnyAuthority('ADMIN','CREATOR')">
 	    	<input type="text" th:field="*{section}" id="section" placeholder="укажите секцию">	    				    		
-	  	    <!-- <input type="text" th:field="*{quantity}" id="quantity"> -->	
 		    <input  type="text" th:field="*{description}" id="description" placeholder="укажите описание">  
 		    <input type="submit" value="add"> 
 	</form> 

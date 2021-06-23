@@ -2,29 +2,40 @@
 <html lang="en" xmlns:th="http://thymeleaf.org"
 				xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-	<meta charset="UTF-8">
-	<title>Product</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<meta charset="UTF-8">
+<title>Products by sectionID</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<form th:method="POST" th:action="@{/section/products/add}" th:object="${product}" 
-	enctype="multipart/form-data"
-	sec:authorize="hasAnyAuthority('ADMIN','CREATOR')"
-	>
-	<!-- <input type="hidden" th:field="*{id}"> -->
-	<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите имя продукта">
-	<select th:field="*{section}">
-		<th:block th:each="sec: ${sect}">
-			<option th:text="${sec.getSection()}" th:value="${sec.getSection()}">
-		</th:block>
-	</select>
-	<input type="text" th:field="*{description}" id="description" placeholder="описание">
-	<input type="text" th:field="*{quantity}" id="quantity" placeholder="колличество">
-	<input type="text" th:field="*{price}" id="price" placeholder="цена">
-	<label>Logo:<input type="file" name = "fileImage" id="fileImage" accept="image/png, image/jpeg"/></label>
-	<img id="thumbnail" alt="Logo Preview" width="150" height="110">
-	<input type="submit" value="add">
-</form>
+	<form th:method="POST" th:action="@{/section/{id_sec}/products(id_sec=${id_sec} ) }" th:object="${product}" 
+		enctype="multipart/form-data"
+		sec:authorize="hasAnyAuthority('ADMIN','CREATOR')"
+		>
+		<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите имя продукта">
+		<label for = "name_product" th:if="${#fields.hasErrors('name_product')}" th:errors="*{name_product}">
+			name_product error 
+		</label><br/>
+		<select th:field="*{section}">
+			<th:block th:each="sec: ${sect}">
+				<option th:text="${sec.getSection()}" th:value="${sec.getSection()}">
+			</th:block>
+		</select><br/>
+		<input type="text" th:field="*{description}" id="description" placeholder="описание">
+		<label for = "description" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
+			description error
+		 </label><br/>
+		<input type="text" th:field="*{quantity}" id="quantity" placeholder="колличество">
+		<label for = "quantity" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}">
+			quantity error 
+		</label><br/>
+		<input type="text" th:field="*{price}" id="price" placeholder="цена">
+		<label for = "price" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">
+			quantity error 
+		</label><br/>
+		<label>Logo:<input type="file" name = "fileImage" id="fileImage" accept="image/png, image/jpeg"/></label>
+		<img id="thumbnail" alt="Logo Preview" width="150" height="110">
+		<input type="submit" value="add">
+	</form>
 	<table>
 		<thead>
 			<tr>
@@ -92,7 +103,6 @@
 		reader.readAsDataURL(file);
 	}
 </script>
-	
-	
+
 </body>
 </html>

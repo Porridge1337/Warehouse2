@@ -1,9 +1,13 @@
 package ru.example.demo.controller;
 
 import java.io.IOException;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,11 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.example.demo.model.ProductModel;
 import ru.example.demo.model.SectionModel;
 import ru.example.demo.service.productModel.ProductServiceImpl;
 import ru.example.demo.service.sectionModel.SectionServiceImpl;
+
 
 @Controller
 @RequestMapping("/section")
@@ -27,7 +32,7 @@ public class ProductController {
 	private ProductServiceImpl productService;
 	@Autowired
 	private SectionServiceImpl sectionService;
-	
+	private boolean isPageBySectionIdProducts;
 	
 	@GetMapping("/products")
 	public String getProductsPage(@ModelAttribute(name = "product") ProductModel productModel ,Model model) {
@@ -35,14 +40,21 @@ public class ProductController {
 		model.addAttribute("product",productModel);		
 		model.addAttribute("products",productService.findAllProducts());				
 		model.addAttribute("sect",productService.findAllSections());
-		
-		return "products/product";
+		isPageBySectionIdProducts=false;
+		return "products/products";
 	}
 	
-	@PostMapping("/products/add")
-	public String addProduct(@ModelAttribute("product")ProductModel productModel,
-			@RequestParam("fileImage")MultipartFile multipartFile) throws IOException { 
-					
+	@PostMapping("/products")
+	public String addProduct(@Valid @ModelAttribute("product")ProductModel productModel,
+			BindingResult br,@RequestParam("fileImage")MultipartFile multipartFile, Model model) throws IOException { 
+						
+		if(br.hasErrors()) {
+			model.addAttribute("product",productModel);		
+			model.addAttribute("products",productService.findAllProducts());				
+			model.addAttribute("sect",productService.findAllSections());
+			return "products/products";
+		}
+		
 		productService.addProduct(productModel,multipartFile);
 		calculateQuantities(productModel.getSectionModel().getId());
 												
@@ -50,13 +62,31 @@ public class ProductController {
 	}
 				
 	@GetMapping("/{id_sec}/products")
-	public String getProductsById(@PathVariable("id_sec")long id_sec,@ModelAttribute(name = "product") ProductModel productModel , Model model) {
-		
-		model.addAttribute("products", productService.findProductBySectionId(id_sec));
+	public String getProductPageBySecId(@PathVariable("id_sec")long id_sec,@ModelAttribute(name = "product") ProductModel productModel , Model model) {
+		isPageBySectionIdProducts=true;
 		model.addAttribute("product",productModel);
+		model.addAttribute("products", productService.findProductBySectionId(id_sec));		
 		model.addAttribute("sect",productService.findAllSections());
+		model.addAttribute("id_sec", id_sec); 
 		
-		return"products/product";
+		return"products/productsBySectionId";
+	}
+	@PostMapping("/{id_sec}/products")
+	public String addProductBySecId(@PathVariable("id_sec")long id_sec,@Valid@ModelAttribute(name = "product") ProductModel productModel,
+			BindingResult br,@RequestParam("fileImage")MultipartFile multipartFile, Model model) {
+		
+		if(br.hasErrors()) {
+			model.addAttribute("product",productModel);		
+			model.addAttribute("products", productService.findProductBySectionId(id_sec));				
+			model.addAttribute("sect",productService.findAllSections());
+			model.addAttribute("id_sec", id_sec);
+			return "products/productsBySectionId";
+		}
+		
+		productService.addProduct(productModel,multipartFile);
+		calculateQuantities(productModel.getSectionModel().getId());
+												
+		return "redirect:/section/"+id_sec+"/products";
 	}
 		
 	@GetMapping("/{id_sec}/products/{id}/update") 
@@ -73,7 +103,12 @@ public class ProductController {
 	@PatchMapping("/{id_sec}/products/{id}/update")
 	public String updateProduct(@PathVariable("id_sec")long id_sec,@PathVariable("id")long id,
 			@ModelAttribute(name = "update")ProductModel productModel,
-			@RequestParam("fileImage")MultipartFile multipartFile) throws IOException {
+			@RequestParam("fileImage")MultipartFile multipartFile, RedirectAttributes redirectAttributes) throws IOException {
+			
+		if(multipartFile.getSize() > 3145728) {
+			redirectAttributes.addFlashAttribute("message",multipartFile.getOriginalFilename() + " Requires less than 3 MB size");			
+			return "redirect:/section/"+id_sec+"/products/"+id+"/update";
+		}
 				
 		productService.updateProduct(productModel,multipartFile );
 		
@@ -86,7 +121,11 @@ public class ProductController {
 		productService.deleteProduct(id);		
 		calculateQuantities(id_sec);
 				
-		return"redirect:/section/products";
+		if(!isPageBySectionIdProducts) { 
+			return"redirect:/section/products";
+		}else return "redirect:/section/{id_sec}/products";
+		
+		
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////
 	private void calculateQuantities(long section_id) { //высчитывает колличество продуктов в таблицу секции

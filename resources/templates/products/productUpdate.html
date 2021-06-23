@@ -9,7 +9,7 @@
 <body>
 	<form th:method="PATCH" th:action="@{/section/{id_sec}/products/{id}/update(id=${update.getId()},id_sec=${update.sectionModel.getId()} )}" th:object="${update}"
 	enctype="multipart/form-data">
-		<input type="hidden" th:field=*{id} id="id">
+		<!--  <input type="hidden" th:field=*{id} id="id">-->
 		<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите products name">
 		<select th:field="*{section}">
 			<th:block th:each="sec: ${sect}">
@@ -21,8 +21,10 @@
 		<input type="text" th:field="*{price}" id="price" placeholder="цена">
 		<input type="hidden" th:field="*{logo}" id = "logo">
 		<label>Logo:<input type="file" name = "fileImage" id="fileImage" accept="image/png, image/jpeg"/></label>
-		<img id="thumbnail" alt="Logo Preview" width="150" height="110">
-		<input type="submit" value="add">
+		<img th:src="@{${update.logoImagePath}}" id="thumbnail" alt="Logo Preview" width="150" height="110">	
+		<!-- <label for="logo" th:if="${#fields.hasErrors('logo')}" th:errors="*{logo}">logo error</label> -->
+		<input type="submit" value="add"><br/>
+		<span th:text="${message}">Error file</span>
 	</form>
 	
 	<script type="text/javascript">

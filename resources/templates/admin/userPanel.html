@@ -10,7 +10,7 @@
 		<input type="hidden" th:field="*{user_id}" id="user_id"/>
 		<input type="text" th:field="*{username}" id="section">	    				    		
 		<input type="text" th:field="*{actives}" id="actives">		
-		<input type="text" th:field="*{password}" id="password">		<!-- <input type="text" th:field="*{password}" id="quantity">	 -->
+		<input type="text" th:field="*{password}" id="password">
 		<th:block th:each="role : ${roles}">
 			<input type="checkbox" th:field="*{role}" th:value="${role.getRole_id()}" th:text="${role.getRole()}"/>			
 		</th:block>
