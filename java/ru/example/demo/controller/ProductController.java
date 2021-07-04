@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,23 +36,61 @@ public class ProductController {
 	private boolean isPageBySectionIdProducts;
 	
 	@GetMapping("/products")
-	public String getProductsPage(@ModelAttribute(name = "product") ProductModel productModel ,Model model) {
+	public String productsPage(@ModelAttribute(name = "product") ProductModel productModel ,Model model) {
+	
+		return getProductsPage(productModel, 1,"nameproduct","unsorted",model );
+	}
+	@GetMapping("/products/{pageNumber}")
+	public String getProductsPage(@ModelAttribute(name = "product") ProductModel productModel ,
+			@PathVariable("pageNumber")int currentPage,
+			@RequestParam(required = false, name = "sortField")String sortField,
+			@RequestParam(required = false, name = "sortDir")String sortDir,
+			Model model) {
 			
+		Page <ProductModel> page = productService.findAllProducts(currentPage,sortField,sortDir );
+		long totalPages = page.getTotalPages();
+		long totalItems = page.getTotalElements();
+		
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("totalItems",totalItems);
+		
+		model.addAttribute("sortField",sortField);
+		model.addAttribute("sortDir",sortDir);
+		model.addAttribute("reverseSortDir",sortDir.equals("asc") ? "desc" : "asc");
+		
 		model.addAttribute("product",productModel);		
-		model.addAttribute("products",productService.findAllProducts());				
+		model.addAttribute("products",page.getContent());				
 		model.addAttribute("sect",productService.findAllSections());
+		
 		isPageBySectionIdProducts=false;
 		return "products/products";
 	}
 	
-	@PostMapping("/products")
+	@PostMapping("/products/{pageNumber}/add")
 	public String addProduct(@Valid @ModelAttribute("product")ProductModel productModel,
-			BindingResult br,@RequestParam("fileImage")MultipartFile multipartFile, Model model) throws IOException { 
+			BindingResult br,
+			@RequestParam("fileImage")MultipartFile multipartFile,
+			@PathVariable("pageNumber")int currentPage,
+			Model model) throws IOException { 
 						
 		if(br.hasErrors()) {
+			Page <ProductModel> page = productService.findAllProducts(currentPage,"nameproduct","unsorted");
+			long totalPages = page.getTotalPages();
+			long totalItems = page.getTotalElements();
+			
+			model.addAttribute("currentPage", currentPage);
+			model.addAttribute("totalPages", totalPages);
+			model.addAttribute("totalItems",totalItems);
+			
+			model.addAttribute("sortField","nameproduct");
+			model.addAttribute("sortDir","unsorted");
+			model.addAttribute("reverseSortDir","asc");
+			
 			model.addAttribute("product",productModel);		
-			model.addAttribute("products",productService.findAllProducts());				
+			model.addAttribute("products",page.getContent());				
 			model.addAttribute("sect",productService.findAllSections());
+			
 			return "products/products";
 		}
 		
@@ -60,26 +99,63 @@ public class ProductController {
 												
 		return "redirect:/section/products";
 	}
-				
+	
 	@GetMapping("/{id_sec}/products")
-	public String getProductPageBySecId(@PathVariable("id_sec")long id_sec,@ModelAttribute(name = "product") ProductModel productModel , Model model) {
-		isPageBySectionIdProducts=true;
+	public String productPageBySecId(@PathVariable("id_sec")long id_sec,
+			@ModelAttribute(name = "product") ProductModel productModel, 
+			Model model) {
+			
+		return getProductPageBySecId(productModel,id_sec,1,"nameproduct","unsorted", model );	
+	}
+	
+	@GetMapping("/{id_sec}/products/{pageNumber}")
+	public String getProductPageBySecId(@ModelAttribute(name = "product") ProductModel productModel,
+			@PathVariable("id_sec")long id_sec,
+			@PathVariable(name = "pageNumber")int currentPage,
+			@RequestParam(required = false, name = "sortField")String sortField,
+			@RequestParam(required = false, name = "sortDir")String sortDir, 
+			Model model) {
+		Page <ProductModel> page = productService.findProductBySectionId(id_sec,currentPage,sortField,sortDir );
+		long totalPages = page.getTotalPages();
+		long totalElements = page.getTotalElements();
+		
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("totalElements", totalElements);
+		model.addAttribute("currentPage",currentPage);
+		
+		model.addAttribute("sortField",sortField);
+		model.addAttribute("sortDir",sortDir);
+		model.addAttribute("reverseSortDir",sortDir.equals("asc") ? "desc" : "asc");
+		
 		model.addAttribute("product",productModel);
-		model.addAttribute("products", productService.findProductBySectionId(id_sec));		
+		model.addAttribute("products", page.getContent());		
 		model.addAttribute("sect",productService.findAllSections());
 		model.addAttribute("id_sec", id_sec); 
-		
+										
+		isPageBySectionIdProducts=true;
 		return"products/productsBySectionId";
 	}
-	@PostMapping("/{id_sec}/products")
-	public String addProductBySecId(@PathVariable("id_sec")long id_sec,@Valid@ModelAttribute(name = "product") ProductModel productModel,
-			BindingResult br,@RequestParam("fileImage")MultipartFile multipartFile, Model model) {
+	@PostMapping("/{id_sec}/products/{pageNumber}")
+	public String addProductBySecId(@Valid@ModelAttribute(name = "product") ProductModel productModel,			
+			BindingResult br,
+			@PathVariable("id_sec")long id_sec,
+			@PathVariable(name = "pageNumber")int currentPage,
+			@RequestParam("fileImage")MultipartFile multipartFile, 
+			Model model) {
 		
 		if(br.hasErrors()) {
-			model.addAttribute("product",productModel);		
-			model.addAttribute("products", productService.findProductBySectionId(id_sec));				
+			Page <ProductModel> page = productService.findProductBySectionId(id_sec,currentPage,"nameproduct","unsorted");
+			long totalPages = page.getTotalPages();
+			long totalElements = page.getTotalElements();
+			
+			model.addAttribute("totalPages", totalPages);
+			model.addAttribute("totalElements", totalElements);
+			model.addAttribute("currentPage",currentPage);
+			
+			model.addAttribute("product",productModel);
+			model.addAttribute("products", page.getContent());		
 			model.addAttribute("sect",productService.findAllSections());
-			model.addAttribute("id_sec", id_sec);
+			model.addAttribute("id_sec", id_sec); 
 			return "products/productsBySectionId";
 		}
 		
@@ -128,8 +204,8 @@ public class ProductController {
 		
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////
-	private void calculateQuantities(long section_id) { //высчитывает колличество продуктов в таблицу секции
-		int ammountProductsModel = productService.findProductBySectionId(section_id).size();		
+	private void calculateQuantities(long section_id) { //высчитывает и записывает колличество продуктов в таблицу секции
+		int ammountProductsModel = productService.getSizeOfProductsModelBySectionId(section_id);
 		SectionModel sectionModel = sectionService.findBySectionId(section_id);
 		sectionModel.setQuantity(ammountProductsModel);
 		sectionService.updateProduct(sectionModel);				

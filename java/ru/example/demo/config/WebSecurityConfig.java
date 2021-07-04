@@ -43,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 					.antMatchers("/").hasAnyAuthority("USER", "CREATOR", "EDITOR", "ADMIN")
 					.antMatchers("/section").hasAnyAuthority("USER", "CREATOR", "EDITOR", "ADMIN")
 					.antMatchers("/section/{id}/update/**").hasAnyAuthority("EDITOR", "ADMIN")
-					.antMatchers("/section/add/**").hasAnyAuthority("CREATOR", "ADMIN")
+					//.antMatchers("/section/add/**").hasAnyAuthority("CREATOR", "ADMIN")
 					.antMatchers("/adminPage/**").hasAnyAuthority("ADMIN")
 					.antMatchers("/section/products/**").hasAnyAuthority("USER", "CREATOR", "EDITOR", "ADMIN")
 					.antMatchers("/section/{id_sec}/products/**").hasAnyAuthority("USER", "CREATOR", "EDITOR", "ADMIN")

@@ -26,9 +26,9 @@ public class ProductModel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;	
 	
-	@Column(name = "name_product")
+	@Column(name = "nameproduct")
 	@Size(min = 1,max = 45,message = "min symbols is 1, max 45 letters")
-	private String name_product;
+	private String nameproduct;
 	
 	@Column(name = "section")
 	private String section;
@@ -57,10 +57,10 @@ public class ProductModel {
 	public ProductModel() {
 	}
 
-	public ProductModel(long id, String name_product,String section, String description, String quantity, String price,
+	public ProductModel(long id, String nameproduct,String section, String description, String quantity, String price,
 			SectionModel sectionModel) {
 		this.id = id;
-		this.name_product = name_product;
+		this.nameproduct = nameproduct;
 		this.section=section;
 		this.description = description;
 		this.quantity = quantity;
@@ -76,12 +76,12 @@ public class ProductModel {
 		this.id = id;
 	}
 
-	public String getName_product() {
-		return name_product;
+	public String getNameproduct() {
+		return nameproduct;
 	}
 
-	public void setName_product(String name_product) {
-		this.name_product = name_product;
+	public void setNameproduct(String nameproduct) {
+		this.nameproduct = nameproduct;
 	}
 	
 	public String getSection() {
@@ -135,14 +135,14 @@ public class ProductModel {
 	
 	@Transient
 	public String getLogoImagePath() {
-		if(logo==null || section == null || name_product == null) return null;
+		if(logo==null || section == null || nameproduct == null) return null;
 		
-		return "/products-logos/"+section+"/"+name_product+"/"+logo;
+		return "/products-logos/"+section+"/"+nameproduct+"/"+logo;
 	}
 
 	@Override
 	public String toString() {
-		return "ProductModel [id=" + id + ", name_product=" + name_product + ", section=" + section + ", description="
+		return "ProductModel [id=" + id + ", nameproduct=" + nameproduct + ", section=" + section + ", description="
 				+ description + ", quantity=" + quantity + ", price=" + price + ", sectionModel=" + sectionModel + "]";
 	}
 	

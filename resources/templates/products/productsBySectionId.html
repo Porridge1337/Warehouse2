@@ -7,12 +7,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-	<form th:method="POST" th:action="@{/section/{id_sec}/products(id_sec=${id_sec} ) }" th:object="${product}" 
+	<form th:method="POST" th:action="@{/section/{id_sec}/products/{pageNumber}(id_sec=${id_sec}, pageNumber=${currentPage} ) }" th:object="${product}" 
 		enctype="multipart/form-data"
 		sec:authorize="hasAnyAuthority('ADMIN','CREATOR')"
 		>
-		<input type="text" th:field="*{name_product}" id="name_product" placeholder="введите имя продукта">
-		<label for = "name_product" th:if="${#fields.hasErrors('name_product')}" th:errors="*{name_product}">
+		<input type="text" th:field="*{nameproduct}" id="nameproduct" placeholder="введите имя продукта">
+		<label for = "nameproduct" th:if="${#fields.hasErrors('nameproduct')}" th:errors="*{nameproduct}">
 			name_product error 
 		</label><br/>
 		<select th:field="*{section}">
@@ -43,12 +43,20 @@
 			</tr>
 			<tr>	
 				<th>№</th>
-				<th>Product name</th>
+				<th>
+					<a th:href="@{'/section/'+${id_sec}+'/products/'+${currentPage}+'?sortField=nameproduct' + '&sortDir='+${reverseSortDir} }">Name product</a>
+				</th>
 				<th>Logo</th>
-				<th>Section</th>
+				<th>
+					<a th:href="@{'/section/'+${id_sec}+'/products/'+${currentPage}+'?sortField=section' + '&sortDir='+${reverseSortDir} }">Section</a>
+				</th>
 				<th>Description</th>
-				<th>Quantity</th>
-				<th>Price</th>
+				<th>
+					<a th:href="@{'/section/'+${id_sec}+'/products/'+${currentPage}+'?sortField=quantity' + '&sortDir='+${reverseSortDir} }" >Quantity</a>
+				</th>
+				<th>
+					<a th:href="@{'/section/'+${id_sec}+'/products/'+${currentPage}+'?sortField=price' + '&sortDir='+${reverseSortDir} }">Price</a>
+				</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -58,7 +66,7 @@
 					<span th:text="${sec.count}">Number</span>
 				</td>
 				<td>
-					<span th:text="${prod.getName_product()}"></span>
+					<span th:text="${prod.getNameproduct()}">NameProduct</span>
 				</td>
 				<td>
 					<img th:src="@{${prod.logoImagePath}}" width="150" height="110">
@@ -67,13 +75,13 @@
 					<span th:text="${prod.getSection()}">Number</span>
 				</td>
 				<td>
-					<span th:text="${prod.getDescription()}"></span>
+					<span th:text="${prod.getDescription()}">Description</span>
 				</td>
 				<td>
-					<span th:text="${prod.getQuantity()}"></span>
+					<span th:text="${prod.getQuantity()}">Quantity</span>
 				</td>
 				<td>
-					<span th:text="${prod.getPrice()}"></span>
+					<span th:text="${prod.getPrice()}">Price</span>
 				</td>
 				<td>				
 					<form th:method="DELETE" th:action="@{/section/{id_sec}/products/{id}/delete(id=${prod.getId()},id_sec=${prod.sectionModel.getId()} )}" sec:authorize="hasAnyAuthority('ADMIN')">
@@ -86,6 +94,29 @@
 			</tr>
 		</tbody>
 	</table>
+	<div>
+		Total items :[[${totalItems}]] - Page [[${currentPage}]] of [[${totalPages}]]
+		&nbsp;-&nbsp;
+		<a th:if="${currentPage > 1}" th:href="@{'/section/'+${id_sec}+'/products/'+1+ '?sortField=' +${sortField} + '&sortDir=' + ${sortDir}}">
+			First
+		</a>
+		<span th:unless="${currentPage > 1}">
+			First
+		</span>&nbsp;&nbsp; 
+		<a th:if="${currentPage > 1}" th:href="@{'/section/'+${id_sec}+'/products/'+${currentPage-1}+ '?sortField=' +${sortField} + '&sortDir=' + ${sortDir}}"> Previous </a>
+		<a th:unless="${currentPage > 1}"> Previous </a>&nbsp;&nbsp;
+		<span th:each="i:${#numbers.sequence(1, totalPages)}">
+			<a th:if="${i != currentPage}" th:href="@{'/section/'+${id_sec}+'/products/'+${i} + '?sortField=' +${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
+			<a th:unless="${ i!=currentPage}"> [[${i}]]</a>
+			&nbsp;
+		</span>
+		<a th:if="${currentPage < totalPages}" th:href="@{'/section/'+${id_sec}+'/products/'+${currentPage+1} + '?sortField=' +${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
+		<span th:unless="${currentPage < totalPages}">Next</span>&nbsp;&nbsp;
+		<a th:if="${currentPage < totalPages}" th:href="@{'/section/'+${id_sec}+'/products/'+${totalPages}+ '?sortField=' +${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
+		<span th:unless="${currentPage < totalPages}">Last</span>
+	</div>
+	
+	
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#fileImage').change(function(){

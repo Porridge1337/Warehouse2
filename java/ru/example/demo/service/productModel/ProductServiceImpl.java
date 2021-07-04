@@ -9,6 +9,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +39,7 @@ public class ProductServiceImpl {
 					
 		productModel.setLogo(StringUtils.cleanPath(multipartFile.getOriginalFilename()));	
 		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));
-		uploadPic(productModel.getSection(),productModel.getName_product(),multipartFile );
+		uploadPic(productModel.getSection(),productModel.getNameproduct(),multipartFile );
 		
 		return prodRepo.save(productModel);
 	}
@@ -46,8 +50,17 @@ public class ProductServiceImpl {
 	}
 
 	
-	public List<ProductModel> findAllProducts() {		
-		return prodRepo.findAll();
+	public Page<ProductModel> findAllProducts(int pageNumber, String sortField, String sortDir) {	
+		Sort sort;
+		
+		if(sortDir.equals("unsorted")) {
+			sort = Sort.unsorted();
+		}else {
+			sort = sortDir.equals("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+		}				
+		Pageable pageable = PageRequest.of(pageNumber - 1, 5,sort);
+		
+		return prodRepo.findAll(pageable);
 	}
 
 	
@@ -57,11 +70,22 @@ public class ProductServiceImpl {
 	}
 
 	
-	public List<ProductModel> findProductBySectionId(long sec_id) {
+	public Page<ProductModel> findProductBySectionId(long sec_id, int pageNumber,String sortField,String sortDir) {
+		Sort sort;
+		if(sortDir.equals("unsorted")) {
+			sort = Sort.unsorted();
+		}else {
+			sort = sortDir.equals("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+		}	
 		
-		return prodRepo.findProductsModelBySectionId(sec_id);
+		Pageable pageable = PageRequest.of(pageNumber-1, 5, sort);
+				
+		return prodRepo.findProductsModelBySectionId(sec_id,pageable);
 	}
-
+	public int getSizeOfProductsModelBySectionId(long sec_id){
+		return prodRepo.findProductsModelBySectionId(sec_id).size();
+	}
+	
 	
 	public ProductModel findProductById(long id) {		
 		
@@ -72,11 +96,11 @@ public class ProductServiceImpl {
 	public void updateProduct(ProductModel productModel, MultipartFile multipartFile) {		
 		
 		if(!multipartFile.isEmpty()) {	
-			deleteOldPic(productModel.getSection(),productModel.getName_product(),productModel.getLogo(),multipartFile );
+			deleteOldPic(productModel.getSection(),productModel.getNameproduct(),productModel.getLogo(),multipartFile );
 			productModel.setLogo(StringUtils.cleanPath(multipartFile.getOriginalFilename()));
 		}
 		productModel.setSectionModel(secRepo.findBySection(productModel.getSection()));		
-		uploadPic(productModel.getSection(),productModel.getName_product(),multipartFile);	
+		uploadPic(productModel.getSection(),productModel.getNameproduct(),multipartFile);	
 		prodRepo.save(productModel);				
 	}	
 	
